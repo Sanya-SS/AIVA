@@ -2,9 +2,13 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Code checkout') {
             steps {
-                echo 'Building..'
+                Checkout([
+                    $class: 'GitSCM',
+                    Branches: [[name: '*/main']],
+                    UserRemoteConfigs: [[url: 'https://github.com/Sanya-SS/AIVA.git']]
+                ])
             }
         }
         stage('Test') {
