@@ -1,23 +1,17 @@
 pipeline {
     agent any
     stages {
-        stage('SCM') {
-            steps{
-                checkout scm
+        stage('Git Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Sanya-SS/AIVA']])
+                echo 'Git Checkout Completed'
             }
         }
-        stage('SonarCloud') {
-            environment {
-                SCANNER_HOME = tool 'SonarQubeScanner'
-                ORGANIZATION = "igorstojanovski-github"
-                PROJECT_NAME = "igorstojanovski_jenkins-pipeline-as-code"
-            }
+        stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarCloudOne') {
-                sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.organization=$ORGANIZATION \
-                -Dsonar.java.binaries=build/classes/java/ \
-                -Dsonar.projectKey=$PROJECT_NAME \
-                -Dsonar.sources=.'''
+                withSonarQubeEnv('sonarscanner-server') {
+                    bat '''mvn clean verify sonar:sonar -Dsonar.projectKey=aiva-scan -Dsonar.projectName='aiva-scan' -Dsonar.host.url=http://52.66.201.178:9000''' //port 9000 is default for sonar
+                    echo 'SonarQube Analysis Completed'
                 }
             }
         }
