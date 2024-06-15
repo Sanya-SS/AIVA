@@ -2,18 +2,13 @@ pipeline {
     agent any
 
     stages {
-        stage('Code checkout') {
-            steps {
-                Checkout([
-                    $class: 'GitSCM',
-                    Branches: [[name: '*/main']],
-                    UserRemoteConfigs: [[url: 'https://github.com/Sanya-SS/AIVA.git']]
-                ])
-            }
+        stage('SCM') {
+            checkout scm
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
+        stage('SonarQube Analysis') {
+            def scannerHome = tool 'SonarScanner';
+            withSonarQubeEnv() {
+                sh "${scannerHome}/bin/sonar-scanner"
             }
         }
         stage('Deploy') {
