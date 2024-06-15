@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     stages {
         stage('SCM') {
             checkout scm
@@ -12,6 +11,11 @@ pipeline {
             }
         }
         stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+        stage('New thang') {
             steps {
                 echo 'Deploying....'
             }
